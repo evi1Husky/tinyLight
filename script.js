@@ -2,20 +2,27 @@ const light = document.querySelector(".light");
 
 let X = 50;
 let Y = 50;
-let velocityX = 3;
-let velocityY = 3;
+let velocityX = 0;
+let velocityY = 0;
 let rightReached = false;
-let leftReached = false;
 let topReached = false;
-let bottomReached = false;
+
+const rnd = (max, min) => {
+  return Math.random() * (max - min) + min;
+};
 
 const lightMove = (X, Y) => {
   light.style.left = `${X}%`;
   light.style.top = `${Y}%`;
 };
 
-const collision = (axisSpeed) => {
-  return axisSpeed - (Math.random() * (0.3 - 0) + 0);
+const collision = () => {
+  const m1 = 100;
+  const m2 = 200;
+  const v1 = velocityX + velocityY;
+  const v2 = 0;
+  const vf = (m1 * v1 + m2 * v2) / (m1 + m2);
+  return vf;
 };
 
 const stopCondition = () => {
@@ -30,7 +37,6 @@ const moveRight = () => {
   if (X >= 100) {
     velocityX = collision(velocityX);
     rightReached = true;
-    leftReached = false;
   }
 };
 
@@ -39,7 +45,6 @@ const moveLeft = () => {
   lightMove(X, Y);
   if (X <= 0) {
     velocityX = collision(velocityX);
-    leftReached = true;
     rightReached = false;
   }
 };
@@ -50,7 +55,6 @@ const moveTop = () => {
   if (Y <= 0) {
     velocityY = collision(velocityY);
     topReached = true;
-    bottomReached = false;
   }
 };
 
@@ -59,7 +63,6 @@ const moveBottom = () => {
   lightMove(X, Y);
   if (Y >= 100) {
     velocityY = collision(velocityY);
-    bottomReached = true;
     topReached = false;
   }
 };
@@ -71,26 +74,53 @@ const loop = () => {
   }
   window.requestAnimationFrame(loop);
   if (!rightReached) {
-    velocityX -= 0.001;
+    velocityX -= rnd(0.001, 0);
     moveRight();
-  }
-  if (rightReached) {
-    velocityX -= 0.001;
+  } else if (rightReached) {
+    velocityX -= rnd(0.001, 0);
     moveLeft();
   }
   if (!topReached) {
-    velocityY -= 0.001;
+    velocityY -= rnd(0.001, 0);
     moveTop();
-  }
-  if (topReached) {
-    velocityY -= 0.001;
+  } else if (topReached) {
+    velocityY -= rnd(0.001, 0);
     moveBottom();
   }
 };
 
-light.onclick = () => {
-  lightMove(X, Y);
-  velocityX = 3;
-  velocityY = 3;
+const getDirection = (event) => {
+  let x = event.offsetX;
+  let y = event.offsetY;
+  if (x === 0 || x === 1) {
+    rightReached = false;
+    velocityX = x = y / rnd(7, 3);
+    velocityY = x / y;
+    return;
+  } else if (y === 0 || y === 1) {
+    topReached = true;
+    velocityY = y = x / rnd(7, 3);
+    velocityX = y / x;
+    return;
+  } else if (x < 17 && x > 11) {
+    rightReached = true;
+    velocityX = x / rnd(7, 3);
+    velocityY = y / rnd(7, 3);
+    return;
+  } else if (x > 1 && x < 12) {
+    topReached = false;
+    velocityX = x / rnd(7, 3);
+    velocityY = y / rnd(7, 3);
+    return;
+  }
+};
+
+light.onmouseover = (event) => {
+  getDirection(event);
+  loop();
+};
+
+light.ontouchmove = (event) => {
+  getDirection(event);
   loop();
 };

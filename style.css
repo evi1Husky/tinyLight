@@ -15,8 +15,8 @@
   position: sticky;
   top: 50%;
   left: 50%;
-  width: 0.7rem;
-  height: 0.7rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   background-color: rgb(187, 230, 255);
   box-shadow: 0px 0px 16px 11px rgba(187, 230, 255, 1);
