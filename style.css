@@ -19,13 +19,5 @@
   height: 0.7rem;
   border-radius: 50%;
   background-color: rgb(187, 230, 255);
-  box-shadow: 0px 0px 20px 10px rgb(187, 230, 255);
-}
-
-.light:hover {
-  box-shadow: 0px 0px 20px 13px rgb(187, 230, 255);
-}
-
-.light:active {
-  box-shadow: 0px 0px 20px 15px rgb(187, 230, 255);
+  box-shadow: 0px 0px 15px 11px rgba(187, 230, 255, 1);
 }
