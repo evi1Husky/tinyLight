@@ -2,8 +2,8 @@ const light = document.querySelector(".light");
 
 let X = 50;
 let Y = 50;
-let speedX = 3;
-let speedY = 3;
+let velocityX = 3;
+let velocityY = 3;
 let rightReached = false;
 let leftReached = false;
 let topReached = false;
@@ -19,46 +19,46 @@ const collision = (axisSpeed) => {
 };
 
 const stopCondition = () => {
-  if ((speedX <= 0) & (speedY <= 0)) {
+  if ((velocityX <= 0) & (velocityY <= 0)) {
     return true;
   }
 };
 
 const moveRight = () => {
-  X += speedX;
+  X += velocityX;
   lightMove(X, Y);
   if (X >= 100) {
-    speedX = collision(speedX);
+    velocityX = collision(velocityX);
     rightReached = true;
     leftReached = false;
   }
 };
 
 const moveLeft = () => {
-  X -= speedX;
+  X -= velocityX;
   lightMove(X, Y);
   if (X <= 0) {
-    speedX = collision(speedX);
+    velocityX = collision(velocityX);
     leftReached = true;
     rightReached = false;
   }
 };
 
 const moveTop = () => {
-  Y -= speedY;
+  Y -= velocityY;
   lightMove(X, Y);
   if (Y <= 0) {
-    speedY = collision(speedY);
+    velocityY = collision(velocityY);
     topReached = true;
     bottomReached = false;
   }
 };
 
 const moveBottom = () => {
-  Y += speedY;
+  Y += velocityY;
   lightMove(X, Y);
   if (Y >= 100) {
-    speedY = collision(speedY);
+    velocityY = collision(velocityY);
     bottomReached = true;
     topReached = false;
   }
@@ -71,26 +71,26 @@ const loop = () => {
   }
   window.requestAnimationFrame(loop);
   if (!rightReached) {
-    speedX -= 0.001;
+    velocityX -= 0.001;
     moveRight();
   }
   if (rightReached) {
-    speedX -= 0.001;
+    velocityX -= 0.001;
     moveLeft();
   }
   if (!topReached) {
-    speedY -= 0.001;
+    velocityY -= 0.001;
     moveTop();
   }
   if (topReached) {
-    speedY -= 0.001;
+    velocityY -= 0.001;
     moveBottom();
   }
 };
 
 light.onclick = () => {
   lightMove(X, Y);
-  speedX = 3;
-  speedY = 3;
+  velocityX = 3;
+  velocityY = 3;
   loop();
 };
