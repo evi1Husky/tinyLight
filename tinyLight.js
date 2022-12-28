@@ -8,8 +8,8 @@ customElements.define(
       template.innerHTML = `
       <style>
       :host {
-        --shadowVal1: 20px;
-        --shadowVal2: 10px;
+        --shadowVal1: 50px;
+        --shadowVal2: 15px;
       }
       .box {
         position: fixed;
@@ -32,7 +32,7 @@ customElements.define(
         height: 1rem;
         border-radius: 50%;
         background-color: rgb(187, 230, 255);
-        box-shadow: 0px 0px var(--shadowVal1) var(--shadowVal2) rgba(187, 230, 255, 1);
+        box-shadow: 0 0 var(--shadowVal1) var(--shadowVal2) rgba(187, 230, 255, 1);
       }
       </style>
       <main class="box">
@@ -73,20 +73,20 @@ customElements.define(
 
     lightAnimation() {
       window.requestAnimationFrame(this.lightAnimation.bind(this));
-      if (this.glowSize < 14 && !this.maxGlowSize) {
+      if (this.glowSize < 15 && !this.maxGlowSize) {
         this.glowSize += 0.05;
-        if (this.glowSize >= 14) {
+        if (this.glowSize >= 15) {
           this.maxGlowSize = true;
           this.minGlowSize = false;
         }
-      } else if (this.glowSize > 10 && !this.minGlowSize) {
+      } else if (this.glowSize > 7 && !this.minGlowSize) {
         this.glowSize -= 0.05;
-        if (this.glowSize <= 10) {
+        if (this.glowSize <= 7) {
           this.maxGlowSize = false;
           this.minGlowSize = true;
         }
       }
-      this.style.setProperty("--shadowVal1", `${this.glowSize * 2}px`);
+      this.style.setProperty("--shadowVal1", `${this.glowSize * 4.1}px`);
       this.style.setProperty("--shadowVal2", `${this.glowSize}px`);
     }
 
