@@ -11,6 +11,7 @@ customElements.define(
         --shadowVal1: 50px;
         --shadowVal2: 15px;
         --brightness: 1;
+        --blur: 0.7px;
       }
       .box {
         position: fixed;
@@ -32,8 +33,12 @@ customElements.define(
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
+        will-change: background-color;
+        will-change: box-shadow;
         background-color: rgba(187, 230, 255, var(--brightness));
         box-shadow: 0 0 var(--shadowVal1) var(--shadowVal2) rgba(187, 230, 255, 1);
+        filter: blur(var(--blur));
+       
       }
       </style>
       <main class="box">
@@ -78,34 +83,35 @@ customElements.define(
     lightAnimation() {
       window.requestAnimationFrame(this.lightAnimation.bind(this));
       if (this.glowSize < 15 && !this.maxGlowSize) {
-        this.glowSize += 0.05;
+        this.glowSize += 0.06;
         if (this.glowSize >= 15) {
           this.maxGlowSize = true;
           this.minGlowSize = false;
         }
-      } else if (this.glowSize > 7 && !this.minGlowSize) {
-        this.glowSize -= 0.05;
-        if (this.glowSize <= 7) {
+      } else if (this.glowSize > 8 && !this.minGlowSize) {
+        this.glowSize -= 0.06;
+        if (this.glowSize <= 8) {
           this.maxGlowSize = false;
           this.minGlowSize = true;
         }
       }
       if (this.brightness < 1 && !this.maxBrightness) {
-        this.brightness += 0.01;
+        this.brightness += 0.006;
         if (this.brightness >= 1) {
           this.maxBrightness = true;
           this.minBrightness = false;
         }
-      } else if (this.brightness > 0.8 && !this.minBrightness) {
-        this.brightness -= 0.01;
-        if (this.brightness <= 0.8) {
+      } else if (this.brightness > 0.85 && !this.minBrightness) {
+        this.brightness -= 0.006;
+        if (this.brightness <= 0.85) {
           this.maxBrightness = false;
           this.minBrightness = true;
         }
       }
-      this.style.setProperty("--shadowVal1", `${this.glowSize * 4.1}px`);
+      this.style.setProperty("--shadowVal1", `${this.glowSize * 3.7}px`);
       this.style.setProperty("--shadowVal2", `${this.glowSize}px`);
       this.style.setProperty("--brightness", `${this.brightness}`);
+      this.style.setProperty("--blur", `${this.brightness - 0.3}px`);
     }
 
     loop() {
