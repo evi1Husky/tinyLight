@@ -8,6 +8,8 @@ customElements.define(
       template.innerHTML = `
       <style>
       :host {
+        --shadowVal1: 20px;
+        --shadowVal2: 10px;
       }
       .box {
         position: fixed;
@@ -30,12 +32,13 @@ customElements.define(
         height: 1rem;
         border-radius: 50%;
         background-color: rgb(187, 230, 255);
-        box-shadow: 0px 0px 16px 11px rgba(187, 230, 255, 1);
+        box-shadow: 0px 0px var(--shadowVal1) var(--shadowVal2) rgba(187, 230, 255, 1);
       }
       </style>
       <main class="box">
         <div class="light"></div>
       </main>`;
+
       super();
       this.shadow = this.attachShadow({ mode: "open" });
       this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -48,6 +51,10 @@ customElements.define(
       this.velocityY = 0;
       this.rightReached = false;
       this.topReached = false;
+
+      this.glowSize = 10;
+      this.maxGlowSize = false;
+      this.minGlowSize = false;
     }
 
     connectedCallback() {
@@ -60,6 +67,27 @@ customElements.define(
         this.getDirection(event);
         this.loop();
       };
+
+      this.lightAnimation();
+    }
+
+    lightAnimation() {
+      window.requestAnimationFrame(this.lightAnimation.bind(this));
+      if (this.glowSize < 14 && !this.maxGlowSize) {
+        this.glowSize += 0.05;
+        if (this.glowSize >= 14) {
+          this.maxGlowSize = true;
+          this.minGlowSize = false;
+        }
+      } else if (this.glowSize > 10 && !this.minGlowSize) {
+        this.glowSize -= 0.05;
+        if (this.glowSize <= 10) {
+          this.maxGlowSize = false;
+          this.minGlowSize = true;
+        }
+      }
+      this.style.setProperty("--shadowVal1", `${this.glowSize * 2}px`);
+      this.style.setProperty("--shadowVal2", `${this.glowSize}px`);
     }
 
     loop() {
@@ -117,7 +145,7 @@ customElements.define(
 
     collision() {
       const m1 = 100;
-      const m2 = 200;
+      const m2 = 150;
       const v1 = this.velocityX + this.velocityY;
       const v2 = 0;
       const vf = (m1 * v1 + m2 * v2) / (m1 + m2);
