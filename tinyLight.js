@@ -10,6 +10,7 @@ customElements.define(
       :host {
         --shadowVal1: 50px;
         --shadowVal2: 15px;
+        --brightness: 1;
       }
       .box {
         position: fixed;
@@ -31,7 +32,7 @@ customElements.define(
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
-        background-color: rgb(187, 230, 255);
+        background-color: rgba(187, 230, 255, var(--brightness));
         box-shadow: 0 0 var(--shadowVal1) var(--shadowVal2) rgba(187, 230, 255, 1);
       }
       </style>
@@ -52,9 +53,12 @@ customElements.define(
       this.rightReached = false;
       this.topReached = false;
 
-      this.glowSize = 10;
+      this.glowSize = 15;
       this.maxGlowSize = false;
       this.minGlowSize = false;
+      this.brightness = 1;
+      this.maxBrightness = false;
+      this.minBrightness = false;
     }
 
     connectedCallback() {
@@ -86,8 +90,22 @@ customElements.define(
           this.minGlowSize = true;
         }
       }
+      if (this.brightness < 1 && !this.maxBrightness) {
+        this.brightness += 0.01;
+        if (this.brightness >= 1) {
+          this.maxBrightness = true;
+          this.minBrightness = false;
+        }
+      } else if (this.brightness > 0.8 && !this.minBrightness) {
+        this.brightness -= 0.01;
+        if (this.brightness <= 0.8) {
+          this.maxBrightness = false;
+          this.minBrightness = true;
+        }
+      }
       this.style.setProperty("--shadowVal1", `${this.glowSize * 4.1}px`);
       this.style.setProperty("--shadowVal2", `${this.glowSize}px`);
+      this.style.setProperty("--brightness", `${this.brightness}`);
     }
 
     loop() {
