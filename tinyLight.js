@@ -145,7 +145,7 @@ customElements.define(
 
     collision() {
       const m1 = 100;
-      const m2 = 150;
+      const m2 = 110;
       const v1 = this.velocityX + this.velocityY;
       const v2 = 0;
       const vf = (m1 * v1 + m2 * v2) / (m1 + m2);
