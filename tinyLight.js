@@ -106,16 +106,14 @@ customElements.define(
       setTimeout(() => {
         this.active = true;
         this.randomMoves = true;
-        this.velocityX = 0.1;
-        this.velocityY = 0.1;
+        this.velocityX = this.velocityY = 0.1;
         this.randomMove();
       }, 7000);
     }
 
     chooseMove() {
       const rnd = this.rnd(0.1, 0.01);
-      this.velocityX = rnd;
-      this.velocityY = rnd;
+      this.velocityX = this.velocityY = rnd;
       this.interval += this.rnd(1000, 0);
       setTimeout(() => {
         this.maxRange = this.rnd(100, 50);
@@ -140,7 +138,6 @@ customElements.define(
         window.requestAnimationFrame(moveRandomly);
         isFinished = move();
       }
-
       if (this.randomMoves) {
         window.requestAnimationFrame(this.randomMove.bind(this));
         moveRandomly();
@@ -181,8 +178,7 @@ customElements.define(
 
     getDirection(event) {
       if (!this.active) {
-        this.velocityX = 0;
-        this.velocityY = 0;
+        this.velocityX = this.velocityY = 0;
         return;
       }
       let x = event.offsetX;
