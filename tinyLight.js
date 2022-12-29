@@ -91,10 +91,10 @@ customElements.define(
 
       this.light.ontouchmove = (event) => {
         if (this.active) {
+          this.active = false;
           this.touched();
           this.getDirection(event);
           this.loop();
-          this.active = false;
         }
       };
 
@@ -102,20 +102,18 @@ customElements.define(
     }
 
     touched() {
-      setTimeout(() => {
-        this.randomMoves = false;
-      }, 1);
+      this.randomMoves = false;
       setTimeout(() => {
         this.active = true;
         this.randomMoves = true;
         this.velocityX = 0.1;
         this.velocityY = 0.1;
         this.randomMove();
-      }, 5000);
+      }, 7000);
     }
 
     chooseMove() {
-      const rnd = this.rnd(0.15, 0.01);
+      const rnd = this.rnd(0.1, 0.01);
       this.velocityX = rnd;
       this.velocityY = rnd;
       this.interval += this.rnd(1000, 0);
@@ -132,7 +130,7 @@ customElements.define(
     }
 
     randomMove() {
-      let move = this.chooseMove().bind(this);
+      const move = this.chooseMove().bind(this);
       let isFinished = false;
       function moveRandomly() {
         if (isFinished) {
@@ -143,9 +141,11 @@ customElements.define(
         isFinished = move();
       }
 
-      window.requestAnimationFrame(this.randomMove.bind(this));
       if (this.randomMoves) {
+        window.requestAnimationFrame(this.randomMove.bind(this));
         moveRandomly();
+      } else {
+        return;
       }
     }
 
@@ -180,28 +180,29 @@ customElements.define(
     }
 
     getDirection(event) {
+      if (!this.active) {
+        this.velocityX = 0;
+        this.velocityY = 0;
+        return;
+      }
       let x = event.offsetX;
       let y = event.offsetY;
       if (x >= 0 && x <= 1) {
         this.rightReached = false;
         this.velocityX = x = y / this.rnd(15, 10);
         this.velocityY = x / y;
-        return;
       } else if (y >= 0 && y <= 1) {
         this.topReached = true;
         this.velocityY = y = x / this.rnd(15, 10);
         this.velocityX = y / x;
-        return;
       } else if (x < 17 && x > 11) {
         this.rightReached = true;
         this.velocityX = x / this.rnd(15, 10);
         this.velocityY = y / this.rnd(15, 10);
-        return;
       } else if (x > 1 && x < 12) {
         this.topReached = false;
         this.velocityX = x / this.rnd(15, 10);
         this.velocityY = y / this.rnd(15, 10);
-        return;
       }
     }
 
