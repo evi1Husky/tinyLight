@@ -59,13 +59,14 @@ customElements.define(
       this.rightReached = false;
       this.topReached = false;
 
-      this.randomMoves = true;
+      this.randomMoves = false;
       this.moves = [
         this.moveRight,
         this.moveLeft,
         this.moveTop,
         this.moveBottom,
       ];
+      this.isTouched = false;
 
       this.glowSize = 15;
       this.maxGlowSize = false;
@@ -77,24 +78,37 @@ customElements.define(
 
     connectedCallback() {
       this.light.onmouseover = (event) => {
-        this.randomMoves = false;
+        // this.touched();
         this.getDirection(event);
         this.loop();
       };
 
       this.light.ontouchmove = (event) => {
-        this.randomMoves = false;
+        // this.touched();
         this.getDirection(event);
         this.loop();
       };
 
       this.lightAnimation();
 
-      this.randomMove();
+      // this.randomMove();
+    }
+
+    touched() {
+      this.isTouched = true;
+      if (this.isTouched) {
+        this.randomMoves = false;
+        setTimeout(() => {
+          this.randomMoves = true;
+          this.velocityX = 0.1;
+          this.velocityY = 0.1;
+          this.isTouched = false;
+        }, 5000);
+      }
     }
 
     randomMove() {
-      let callback = this.moves[~~this.rnd(this.moves.length, 0)].bind(this);
+      let move = this.moves[~~this.rnd(this.moves.length, 0)].bind(this);
       let isFinished = false;
       window.requestAnimationFrame(this.randomMove.bind(this));
 
@@ -105,7 +119,7 @@ customElements.define(
         }
         window.requestAnimationFrame(moveRandomly);
 
-        isFinished = callback();
+        isFinished = move();
       }
       if (this.randomMoves) {
         moveRandomly();
@@ -119,17 +133,25 @@ customElements.define(
       }
       window.requestAnimationFrame(this.loop.bind(this));
       if (!this.rightReached) {
-        this.velocityX -= this.rnd(0.001, 0);
+        if (!this.randomMoves) {
+          this.velocityX -= this.rnd(0.001, 0);
+        }
         this.moveRight();
       } else if (this.rightReached) {
-        this.velocityX -= this.rnd(0.001, 0);
+        if (!this.randomMoves) {
+          this.velocityX -= this.rnd(0.001, 0);
+        }
         this.moveLeft();
       }
       if (!this.topReached) {
-        this.velocityY -= this.rnd(0.001, 0);
+        if (!this.randomMoves) {
+          this.velocityY -= this.rnd(0.001, 0);
+        }
         this.moveTop();
       } else if (this.topReached) {
-        this.velocityY -= this.rnd(0.001, 0);
+        if (!this.randomMoves) {
+          this.velocityY -= this.rnd(0.001, 0);
+        }
         this.moveBottom();
       }
     }
@@ -137,12 +159,12 @@ customElements.define(
     getDirection(event) {
       let x = event.offsetX;
       let y = event.offsetY;
-      if (x >= 0 && x <= 2) {
+      if (x >= 0 && x <= 1) {
         this.rightReached = false;
         this.velocityX = x = y / this.rnd(15, 10);
         this.velocityY = x / y;
         return;
-      } else if (y >= 0 && y <= 2) {
+      } else if (y >= 0 && y <= 1) {
         this.topReached = true;
         this.velocityY = y = x / this.rnd(15, 10);
         this.velocityX = y / x;
@@ -165,13 +187,13 @@ customElements.define(
       this.light.style.top = `${Y}%`;
     }
 
-    collision() {
-      const m1 = 100;
+    collision(velocity) {
+      const m1 = 200;
       const m2 = 500;
-      const v1 = this.velocityX + this.velocityY;
+      const v1 = velocity;
       const v2 = 0;
-      const vf = (m1 * v1 + m2 * v2) / (m1 + m2);
-      return vf;
+      const v1fx = ((m1 * v1) + (m2 * v2)) / (m1 + m2);
+      return v1fx;
     }
 
     stopCondition() {
