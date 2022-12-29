@@ -58,6 +58,8 @@ customElements.define(
       this.velocityY = 0.1;
       this.rightReached = false;
       this.topReached = false;
+      this.maxRange = 100;
+      this.minRange = 0;
 
       this.randomMoves = false;
       this.moves = [
@@ -66,7 +68,8 @@ customElements.define(
         this.moveTop,
         this.moveBottom,
       ];
-      this.isTouched = false;
+      this.active = true;
+      this.interval = 0;
 
       this.glowSize = 15;
       this.maxGlowSize = false;
@@ -78,49 +81,69 @@ customElements.define(
 
     connectedCallback() {
       this.light.onmouseover = (event) => {
-        // this.touched();
-        this.getDirection(event);
-        this.loop();
+        if (this.active) {
+          this.touched();
+          this.getDirection(event);
+          this.loop();
+          this.active = false;
+        }
       };
 
       this.light.ontouchmove = (event) => {
-        // this.touched();
-        this.getDirection(event);
-        this.loop();
+        if (this.active) {
+          this.touched();
+          this.getDirection(event);
+          this.loop();
+          this.active = false;
+        }
       };
 
       this.lightAnimation();
-
-      // this.randomMove();
     }
 
     touched() {
-      this.isTouched = true;
-      if (this.isTouched) {
+      setTimeout(() => {
         this.randomMoves = false;
-        setTimeout(() => {
-          this.randomMoves = true;
-          this.velocityX = 0.1;
-          this.velocityY = 0.1;
-          this.isTouched = false;
-        }, 5000);
-      }
+      }, 1);
+      setTimeout(() => {
+        this.active = true;
+        this.randomMoves = true;
+        this.velocityX = 0.1;
+        this.velocityY = 0.1;
+        this.randomMove();
+      }, 5000);
+    }
+
+    chooseMove() {
+      const rnd = this.rnd(0.15, 0.01);
+      this.velocityX = rnd;
+      this.velocityY = rnd;
+      this.interval += this.rnd(1000, 0);
+      setTimeout(() => {
+        this.maxRange = this.rnd(100, 50);
+        this.minRange = this.rnd(50, 0);
+        const rnd = ~~this.rnd(3, 0);
+        if (rnd === 0 || rnd === 1) {
+          this.maxRange = 100;
+          this.minRange = 0;
+        }
+      }, this.interval);
+      return this.moves[~~this.rnd(this.moves.length, 0)];
     }
 
     randomMove() {
-      let move = this.moves[~~this.rnd(this.moves.length, 0)].bind(this);
+      let move = this.chooseMove().bind(this);
       let isFinished = false;
-      window.requestAnimationFrame(this.randomMove.bind(this));
-
       function moveRandomly() {
         if (isFinished) {
           window.cancelAnimationFrame(moveRandomly);
           return;
         }
         window.requestAnimationFrame(moveRandomly);
-
         isFinished = move();
       }
+
+      window.requestAnimationFrame(this.randomMove.bind(this));
       if (this.randomMoves) {
         moveRandomly();
       }
@@ -188,11 +211,11 @@ customElements.define(
     }
 
     collision(velocity) {
-      const m1 = 200;
-      const m2 = 500;
+      const m1 = 100;
+      const m2 = 1000;
       const v1 = velocity;
       const v2 = 0;
-      const v1fx = ((m1 * v1) + (m2 * v2)) / (m1 + m2);
+      const v1fx = (m1 * v1 + m2 * v2) / (m1 + m2);
       return v1fx;
     }
 
@@ -205,48 +228,48 @@ customElements.define(
     moveRight() {
       this.X += this.velocityX;
       this.lightMove(this.X, this.Y);
-      if (this.X >= 100) {
+      if (this.X >= this.maxRange) {
         if (!this.randomMoves) {
           this.velocityX = this.collision(this.velocityX);
         }
         this.rightReached = true;
-        return "finished";
+        return true;
       }
     }
 
     moveLeft() {
       this.X -= this.velocityX;
       this.lightMove(this.X, this.Y);
-      if (this.X <= 0) {
+      if (this.X <= this.minRange) {
         if (!this.randomMoves) {
           this.velocityX = this.collision(this.velocityX);
         }
         this.rightReached = false;
-        return "finished";
+        return true;
       }
     }
 
     moveTop() {
       this.Y -= this.velocityY;
       this.lightMove(this.X, this.Y);
-      if (this.Y <= 0) {
+      if (this.Y <= this.minRange) {
         if (!this.randomMoves) {
           this.velocityY = this.collision(this.velocityY);
         }
         this.topReached = true;
-        return "finished";
+        return true;
       }
     }
 
     moveBottom() {
       this.Y += this.velocityY;
       this.lightMove(this.X, this.Y);
-      if (this.Y >= 100) {
+      if (this.Y >= this.maxRange) {
         if (!this.randomMoves) {
           this.velocityY = this.collision(this.velocityY);
         }
         this.topReached = false;
-        return "finished";
+        return true;
       }
     }
 
